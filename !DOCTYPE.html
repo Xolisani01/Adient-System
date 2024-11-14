@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bottleneck Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f2f2f2;
+        }
+        .header img {
+            height: 60px;
+            width: auto;
+        }
+        .navbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .navbar .toggle-button {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .navbar .toggle-button div {
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+        }
+        .navbar .navbar-links {
+            display: flex;
+            flex-direction: row;
+        }
+        .navbar .navbar-links.active {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 98%;
+            padding: 20px;
+        }
+        .left-column, .right-column {
+            flex: 1;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 10px;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .info-container {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-container {
+            display: flex;
+            justify-content: center;
+        }
+        .search-bar {
+            padding: 10px;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 10px  10px  10px 10px;
+            outline: none;
+            width: 100%;
+            max-width: 600px;
+        }
+        .search-button {
+            padding: 10px;
+            background-color: gray;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            justify-content: center;
+        }
+        .Header-button {
+            padding: 10px;
+            background-color: #333;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            justify-content: center;
+        }
+        .search-button img {
+            width: 30px;
+            height: 30px;
+        }
+        .navbar-img {
+            width: 250px;
+            height: 60px;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+        .page {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .navbar {
+                flex-direction: column;
+            }
+            .navbar .toggle-button {
+                display: flex;
+            }
+            .navbar .navbar-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+            }
+            .navbar .navbar-links.active {
+                display: flex;
+            }
+            .navbar a {
+                padding: 10px;
+                text-align: center;
+                width: 100%;
+            }
+            .left-column, .center-column, .right-column {
+                margin: 10px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header img {
+                height: 40px;
+            }
+            .navbar a {
+                padding: 8px;
+            }
+            .search-bar {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .left-column, .right-column {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-column, .right-column {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body onload="checkLoginStatus()">
+    <!-- Navbar Start -->
+    <div class="navbar">
+        <div class="left">
+            <img src="https://crh-africa.co.za/wp-content/uploads/2022/01/adient-ppc-logo2-300x109.jpg" class="navbar-img" alt="Company Logo">
+        </div>
+        <div class="toggle-button" onclick="toggleNavbar()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="navbar-links">
+            <button class="Header-button" onclick="showPage('design')">DESIGN</button>
+            <button class="Header-button" onclick="showPage('manufacturing&production')">MANUFACTURING & PRODUCTION</button>
+            <button class="Header-button" onclick="showPage('quality')">QUALITY</button>
+            <button class="Header-button" onclick="showPage('continuous-improvement')">CONTINUOUS IMPROVEMENT</button>
+            <button class="Header-button" onclick="showPage('maintenance')">MAINTENANCE</button>
+            <button class="Header-button" onclick="showPage('projects')">PROJECTS</button>
+            <button class="Header-button" onclick="showPage('engineering-systems')">ENGINEERING SYSTEMS</button>
+        </div>
+        <div class="right">
+            <p id="loginMessage"></p>
+            <button id="loginButton" class="login-button" onclick="redirectToLogin()">Login</button>
+            <button id="logoutButton" style="display:none;" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <!-- Navbar end -->
+
+    <script>
+        function toggleNavbar() {
+            const navbarLinks = document.querySelector('.navbar-links');
+            navbarLinks.classList.toggle('active');
+        }
+
+        function redirectToLogin() {
+            sessionStorage.setItem('loggedIn', 'true');
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('loggedIn');
+            alert('You have logged out successfully');
+            window.location.href = 'home.html';
+            document.getElementById('logoutButton').style.display = 'none';
+        }
+
+        function checkLoginStatus() {
+            const loggedIn = sessionStorage.getItem('loggedIn');
+            if (loggedIn === 'true') {
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('logoutButton').style.display = 'block';
+            } 
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+    <!-- Search Start -->
+    <div class="container">
+        <div class="center">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <button class="search-button" onclick="searchData()">Search</button>
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+    <script>
+        function searchData() {
+            const query = document.querySelector('.search-bar').value.toLowerCase();
+            const resultDiv = document.getElementById('result');
+            const data = document.body.innerText.toLowerCase();
+
+            if (query) {
+                if (data.includes(query)) {
+                    highlightText(query);
+                    resultDiv.innerHTML = ''; // Clear the result div
+                } else {
+                    resultDiv.innerHTML = '<p>Searched data unavailable.</p>';
+                }
+            } else {
+                alert('Please enter a search term.');
+            }
+        }
+
+        function highlightText(query) {
+            const bodyText = document.body.innerHTML;
+            const regex = new RegExp(`(${query})`, 'gi');
+            const newText = bodyText.replace(regex, '<span class="highlight">$1</span>');
+            document.body.innerHTML = newText;
+        }
+    </script>
+
+    <!-- Search End -->
+
+    <!-- Pages start -->
+
+   <!-- Design start -->
+    <div id="design" class="page active">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Parts</title>
+    <style>
+
+        .dbutton-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .brand-button {
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+        .column {
+            margin: 10px;
+            display: none; /* Hide all columns by default */
+        }
+        .dheader {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        .upload-section {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+       <center> <img src="https://th.bing.com/th/id/R.52f61d1410b91a4d5d78ed9284ced317?rik=UN%2bRJqIT%2bsbyzw&pid=ImgRaw&r=0" alt="Volkswagen Logo" width="50" class="brand-button" onclick="showBrand('vwColumn')">
+        <img src="https://listcarbrands.com/wp-content/uploads/2016/03/ford-new-logo.jpg" alt="Ford Logo" width="50" class="brand-button" onclick="showBrand('fordColumn')">
+        <img src="https://th.bing.com/th/id/R.18b791ee0b5f3928e67977025143b248?rik=1ag4hE3lPjKO6A&pid=ImgRaw&r=0" alt="Nissan Logo" width="50" class="brand-button" onclick="showBrand('nissanColumn')"><center>
+    </div>
+    <div class="container">
+        <div class="column" id="vwColumn">
+            <div class="header">
+                VOLKSWAGEN
+             <img src="https://th.bing.com/th/id/R.52f61d1410b91a4d5d78ed9284ced317?rik=UN%2bRJqIT%2bsbyzw&pid=ImgRaw&r=0" alt="Volkswagen Logo" width="50">
+            </div>
+            <table id="vwTable">
+                <tr>
+                    <th>Part Number</th>
+                    <th>Part Description</th>
+                    <th>Part Image</th>
+                </tr>
+            </table>
+            <div class="upload-section">
+                <input type="text" id="vwPartNumber" placeholder="Part Number">
+                <input type="text" id="vwPartDescription" placeholder="Part Description">
+                <input type="file" id="vwPartImage" accept="image/*">
+                <button onclick="addPart('vwTable', 'vwPartNumber', 'vwPartDescription', 'vwPartImage')">Add Part</button>
+            </div>
+        </div>
+        <div class="column" id="fordColumn">
+            <div class="header">
+                FORD
+               <img src="https://listcarbrands.com/wp-content/uploads/2016/03/ford-new-logo.jpg" alt="Ford Logo" width="50">
+            </div>
+            <table id="fordTable">
+                <tr>
+                    <th>Part Number</th>
+                    <th>Part Description</th>
+                    <th>Part Image</th>
+                </tr>
+            </table>
+            <div class="upload-section">
+                <input type="text" id="fordPartNumber" placeholder="Part Number">
+                <input type="text" id="fordPartDescription" placeholder="Part Description">
+                <input type="file" id="fordPartImage" accept="image/*">
+                <button onclick="addPart('fordTable', 'fordPartNumber', 'fordPartDescription', 'fordPartImage')">Add Part</button>
+            </div>
+        </div>
+        <div class="column" id="nissanColumn">
+            <div class="header">
+                NISSAN
+               <img src="https://th.bing.com/th/id/R.18b791ee0b5f3928e67977025143b248?rik=1ag4hE3lPjKO6A&pid=ImgRaw&r=0" alt="Nissan Logo" width="50">
+            </div>
+            <table id="nissanTable">
+                <tr>
+                    <th>Part Number</th>
+                    <th>Part Description</th>
+                    <th>Part Image</th>
+                </tr>
+            </table>
+            <div class="upload-section">
+                <input type="text" id="nissanPartNumber" placeholder="Part Number">
+                <input type="text" id="nissanPartDescription" placeholder="Part Description">
+                <input type="file" id="nissanPartImage" accept="image/*">
+                <button onclick="addPart('nissanTable', 'nissanPartNumber', 'nissanPartDescription', 'nissanPartImage')">Add Part</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showBrand(brandId) {
+            const columns = document.querySelectorAll('.column');
+            columns.forEach(column => {
+                column.style.display = 'none';
+            });
+            document.getElementById(brandId).style.display = 'block';
+        }
+
+        function addPart(tableId, partNumberId, partDescriptionId, partImageId) {
+            const table = document.getElementById(tableId);
+            const partNumber = document.getElementById(partNumberId).value;
+            const partDescription = document.getElementById(partDescriptionId).value;
+            const partImage = document.getElementById(partImageId).files[0];
+
+            if (partNumber && partDescription && partImage) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newRow = table.insertRow();
+                    const cell1 = newRow.insertCell(0);
+                    const cell2 = newRow.insertCell(1);
+                    const cell3 = newRow.insertCell(2);
+
+                    cell1.textContent = partNumber;
+                    cell2.textContent = partDescription;
+                    cell3.innerHTML = `<img src="${e.target.result}" alt="Part Image" width="50">`;
+                };
+                reader.readAsDataURL(partImage);
+            } else {
+                alert("Please fill out all fields and select an image.");
+            }
+        }
+
+        // Show the Volkswagen section by default on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showBrand('vwColumn');
+        });
+    </script>
+</body>
+</html>
+</div>
+    <!-- Design End -->
+    <!-- Manufacturing & Production Start -->
+    <div id="manufacturing&production" class="page">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturing & Production</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .left-column, .middle-column, .right-column {
+            width: 33%;
+            padding: 20px;
+        }
+        
+        .station-info, .bin-info {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .operator-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: #666;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .recording-dot {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .video-output {
+            margin-top: 20px;
+        }
+
+        .video-output video {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .video-output button {
+            margin-right: 10px;
+        }
+
+        .brand-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-buttons button {
+            background: none;
+            border: none;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .brand-buttons img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .update-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .selected-stations {
+            display: none;
+        }
+
+        .bar-graph {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bar {
+            width: 100%;
+            height: 20px;
+            margin: 5px 0;
+        }
+
+        .bar.process-time {
+            background-color: green;
+        }
+
+        .bar.downtime {
+            background-color: red;
+        }
+
+        .flashing {
+            animation: flash 1s infinite;
+        }
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="brand-buttons">
+        <button onclick="showBrandPage('vw')">
+            <img src="https://logodownload.org/wp-content/uploads/2014/02/volkswagen-vw-logo-2.png" alt="VW">
+        </button>
+        <button onclick="showBrandPage('ford')">
+            <img src="https://th.bing.com/th/id/OIP.hR6USOkTqbkwf4Z2e0Pj1wAAAA?rs=1&pid=ImgDetMain" alt="Ford">
+        </button>
+        <button onclick="showBrandPage('nissan')">
+            <img src="https://logodownload.org/wp-content/uploads/2014/09/nissan-logo-1.png" alt="Nissan">
+        </button>
+    </div>
+    <div id="brand-page">
+        <!-- Brand-specific content will be loaded here -->
+    </div>
+    <div class="container">
+        <div class="left-column" id="station-info-container">
+            <h2>Station Information</h2>
+            <div class="station-info">
+                <h3 id="station-name">Station 1 <span class="operator-icon"></span></h3>
+                <p>Processing Parts: <span id="parts-processed">0</span></p>
+                <p>Processing Time: <span id="processing-time">68</span> seconds</p>
+                <p>Bin Capacity: <span id="bin-capacity">29</span></p>
+                <p>Current Bin Fill: <span id="bin-fill">0</span></p>
+                <button id="toggle-simulation-button">Start Simulation</button>
+            </div>
+            <div class="bin-info">
+                <h3>Bin Information</h3>
+                <p>Bin 1: <span id="bin-1-status">Empty</span></p>
+                <p>Bin 2: <span id="bin-2-status">Empty</span></p>
+            </div>
+        </div>
+        <div class="right-column">
+            <h2>Live Video Feed</h2>
+            <div class="video-container">
+              <iframe width="800" height="400" src="https://www.youtube.com/embed/FWHuX0IR8qo?si=6iKk9DMhTz1neEBK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <div class="recording-dot" id="recording-dot"></div>
+            </div>
+            <button id="connect-camera-button">Connect to Camera</button>
+            <button id="start-recording-button">Start Recording</button>
+            <div class="video-output" id="video-output"></div>
+        </div>
+    </div>
+
+    <script>
+        const stationData = {
+            vw: {
+                'Station 1': { processingTime: 60, binCapacity: 30, videoUrl: 'path/to/vw-station1.mp4' },
+                'Station 2': { processingTime: 70, binCapacity: 25, videoUrl: 'path/to/vw-station2.mp4' },
+                'Station 3': { processingTime: 80, binCapacity: 20, videoUrl: 'path/to/vw-station3.mp4' }
+            },
+            ford: {
+                'Cell 1': { processingTime: 65, binCapacity: 28, videoUrl: 'path/to/ford-cell1.mp4' },
+                'Cell 2': { processingTime: 75, binCapacity: 22, videoUrl: 'path/to/ford-cell2.mp4' },
+                'Cell 3': { processingTime: 65, binCapacity: 28, videoUrl: 'path/to/ford-cell3.mp4' },
+                'Cell 4': { processingTime: 70, binCapacity: 20, videoUrl: 'path/to/ford-cell4.mp4' },
+                'Cell 5': { processingTime: 62, binCapacity: 18, videoUrl: 'path/to/ford-cell5.mp4' }
+            },
+            nissan: {
+                'Station 1': { processingTime: 55, binCapacity: 32, videoUrl: 'path/to/nissan-station1.mp4' },
+                'Station 2': { processingTime: 65, binCapacity: 27, videoUrl: 'path/to/nissan-station2.mp4' },
+                'Station 3': { processingTime: 75, binCapacity: 23, videoUrl: 'path/to/nissan-station3.mp4' }
+            }
+        };
+
+        let binFill = 0;
+        let partsProcessed = 0;
+        let bin1Status = "Empty";
+        let bin2Status = "Empty";
+        let simulationInterval;
+        let currentBin = 1;
+        let downtime = 0;
+
+        function updateSimulation() {
+            const processingTime = parseInt(document.getElementById("processing-time").innerText);
+            const binCapacity = parseInt(document.getElementById("bin-capacity").innerText);
+
+            partsProcessed++;
+            binFill++;
+
+            if (binFill > binCapacity) {
+                if (currentBin === 1) {
+                    bin1Status = "Full";
+                    bin2Status = "Empty";
+                    currentBin = 2;
+                } else {
+                    bin2Status = "Full";
+                    bin1Status = "Empty";
+                    currentBin = 1;
+                }
+                binFill = 1;
+                shipBin();
+            }
+
+            document.getElementById("parts-processed").innerText = partsProcessed;
+            document.getElementById("bin-fill").innerText = binFill;
+            document.getElementById("bin-1-status").innerText = bin1Status;
+            document.getElementById("bin-2-status").innerText = bin2Status;
+
+            updateBarGraph(processingTime, downtime);
+        }
+
+        function toggleSimulation() {
+            const button = document.getElementById("toggle-simulation-button");
+            if (button.innerText === "Start Simulation") {
+                simulationInterval = setInterval(updateSimulation, 1000);
+                button.innerText = "Stop Simulation";
+            } else {
+                clearInterval(simulationInterval);
+                button.innerText = "Start Simulation";
+            }
+        }
+
+        function shipBin() {
+            const processingTime = parseInt(document.getElementById("processing-time").innerText);
+            const loadingTime = 120; // Example loading time
+            downtime = loadingTime;
+
+            setTimeout(() => {
+                alert(`Shipping full bin to logistics. Time taken: ${loadingTime} seconds.`);
+                downtime = 0;
+                if (currentBin === 1) {
+                    bin1Status = "Empty";
+                } else {
+                    bin2Status = "Empty";
+                }
+                document.getElementById("bin-1-status").innerText = bin1Status;
+                document.getElementById("bin-2-status").innerText = bin2Status;
+                updateBarGraph(processingTime, downtime);
+            }, loadingTime * 1000);
+        }
+
+        function updateBarGraph(processTime, downTime) {
+            const processTimeBar = document.getElementById("process-time-bar");
+            const downtimeBar = document.getElementById("downtime-bar");
+
+            processTimeBar.style.width = `${processTime}%`;
+            downtimeBar.style.width = `${downTime}%`;
+        }
+
+        // Connect to camera on button click
+        document.getElementById("connect-camera-button").addEventListener("click", async () => {
+            const videoFeed = document.getElementById("video-feed");
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoFeed.srcObject = stream;
+                alert("Connected to camera");
+            } catch (error) {
+                alert("Error connecting to camera: " + error.message);
+            }
+        });
+
+        // Start and stop recording on button click
+        let isRecording = false;
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        document.getElementById("start-recording-button").addEventListener("click", () => {
+            const recordingDot = document.getElementById("recording-dot");
+            const startButton = document.getElementById("start-recording-button");
+            const videoFeed = document.getElementById("video-feed");
+
+            if (!isRecording) {
+                // Start recording
+                const stream = videoFeed.srcObject;
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                mediaRecorder.start();
+                recordingDot.style.display = "block";
+                startButton.innerText = "Stop Recording";
+                alert("Video is recording");
+                isRecording = true;
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                recordingDot.style.display = "none";
+                startButton.innerText = "Start Recording";
+                alert("Recording stopped");
+                isRecording = false;
+
+                // Save the recorded video
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const videoOutput = document.getElementById("video-output");
+                videoOutput.innerHTML = `
+                    <video controls>
+                        <source src="${url}" type="video/webm">
+                    </video>
+                    <button onclick="shareVideo('${url}')">Share</button>
+                    <button onclick="analyzeVideo('${url}')">Analyze Video</button>
+                    <button onclick="saveVideo('${url}')">Save</button>
+                `;
+                recordedChunks = [];
+            }
+        });
+
+        function shareVideo(url) {
+            alert("Sharing video: " + url);
+            // Implement sharing functionality here
+        }
+
+        function analyzeVideo(url) {
+            alert("Analyzing video: " + url);
+            // Implement video analysis functionality here
+        }
+
+        function saveVideo(url) {
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'recorded-video.webm';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            alert("Video saved to your system.");
+        }
+
+        function showBrandPage(brand) {
+            const brandPage = document.getElementById("brand-page");
+            brandPage.innerHTML = `
+                <h2>${brand.toUpperCase()} ${brand === 'ford' ? 'Cells' : 'Stations'}</h2>
+                <div>
+                    <label><input type="checkbox" id="${brand}-station-1"> ${brand === 'ford' ? 'Cell' : 'Station'} 1</label><br>
+                    <label><input type="checkbox" id="${brand}-station-2"> ${brand === 'ford' ? 'Cell' : 'Station'} 2</label><br>
+                    <label><input type="checkbox" id="${brand}-station-3"> ${brand === 'ford' ? 'Cell' : 'Station'} 3</label><br>
+                    <label><input type="checkbox" id="${brand}-station-4"> ${brand === 'ford' ? 'Cell' : 'Station'} 4</label><br>
+                    <label><input type="checkbox" id="${brand}-station-5"> ${brand === 'ford' ? 'Cell' : 'Station'} 5</label><br>
+                    <span class="update-button" onclick="updateStations('${brand}')">+</span>
+                </div>
+            `;
+        }
+
+        function updateStations(brand) {
+            const selectedStations = [];
+            for (let i = 1; i <= 3; i++) {
+                const checkbox = document.getElementById(`${brand}-station-${i}`);
+                if (checkbox.checked) {
+                    selectedStations.push(`${brand === 'ford' ? 'Cell' : 'Station'} ${i}`);
+                }
+            }
+
+            if (selectedStations.length > 0) {
+                const station = selectedStations[0]; // Assuming only one station is selected at a time
+                const stationInfo = stationData[brand][station];
+                document.getElementById("station-name").innerText = station;
+                document.getElementById("processing-time").innerText = stationInfo.processingTime;
+                document.getElementById("bin-capacity").innerText = stationInfo.binCapacity;
+                document.getElementById("video-feed").src = stationInfo.videoUrl;
+
+                // Attach event listener to the simulation button
+                document.getElementById("toggle-simulation-button").onclick = toggleSimulation;
+            }
+        }
+    </script>
+</div>
+</body>
+</html>
+
+
+
+    <!-- Manufacturing & Production End -->
+
+    <!-- Quality Start -->
+    <div id="quality" class="page">
+        <h1>Quality Page</h1>
+        <p>Contact us at example@example.com.</p>
+    </div>
+    <!-- Quality End -->
+
+    <!-- Continuous improvement  Start -->
+    <div id="continuous-improvement" class="page">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Improvement</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .table-container {
+            width: 50%;
+        }
+        .preview-container {
+            width: 50%;
+            border-left: 1px solid #ccc;
+            padding-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Continuous Improvement</h1>
+    <form id="uploadForm">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+        <label for="file">Upload PowerPoint:</label>
+        <input type="file" id="file" name="file" accept=".ppt,.pptx" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div class="container">
+        <div class="table-container">
+            <table id="fileTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>File Uploaded</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+            const fileURL = URL.createObjectURL(file);
+
+            const table = document.getElementById('fileTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            const dateCell = newRow.insertCell(0);
+            const descriptionCell = newRow.insertCell(1);
+            const fileCell = newRow.insertCell(2);
+            const actionCell = newRow.insertCell(3);
+
+            dateCell.textContent = date;
+            descriptionCell.textContent = description;
+            fileCell.textContent = file.name;
+
+            const previewButton = document.createElement('button');
+            previewButton.textContent = 'Preview';
+            previewButton.onclick = function() {
+                const viewerURL = `https://docs.google.com/viewer?url=${encodeURIComponent(fileURL)}&embedded=true`;
+                document.getElementById('filePreview').src = viewerURL;
+            };
+            actionCell.appendChild(previewButton);
+
+            // Clear the form
+            document.getElementById('uploadForm').reset();
+        });
+    </script>
+</body>
+</html>
+
+    </div>
+    <!-- Continuous improvement End -->
+
+    <!-- Maintenance  Start -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance</title>
+    <style>
+        .maint-container {
+            width: 80%;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container, .table-container {
+            width: 48%;
+        }
+        h1 {
+            text-align: center;
+        }
+        .maint-label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .maint-input, .maint-select, .maint-textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .maint-button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .maint-button:hover {
+            background: #218838;
+        }
+        .maint-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="maintenance" class="page">
+        <h1>Maintenance</h1>
+        <div class="maint-container">
+            <div class="left-column">
+                <div class="form-container">
+                    <form id="maintenanceForm">
+                        <label class="maint-label" for="station">Station:</label>
+                        <select class="maint-select" id="station" name="station" required>
+                            <option value="station1">Station 1</option>
+                            <option value="station2">Station 2</option>
+                            <option value="station3">Station 4</option>
+                            <option value="station1">Station 5</option>
+                            <option value="station2">Station 6</option>
+                            <option value="station3">Station 7</option>
+                            <option value="Cell 1">Cell 1</option>
+                            <option value="Cell 2">Cell 2</option>
+                            <option value="Cell 3">Cell 3</option>
+                            <option value="Cell 4">Cell 4</option>
+                            <option value="Cell 5">Cell 5</option>
+                        </select>
+
+                        <label class="maint-label" for="problem">Problem Description:</label>
+                        <textarea class="maint-textarea" id="problem" name="problem" rows="4" required></textarea>
+
+                        <label class="maint-label" for="resolver">Resolver:</label>
+                        <select class="maint-select" id="resolver" name="resolver" required>
+                            <option value="Xolisani">Xolisani</option>
+                            <option value="Sihle">Sihle</option>
+                            <option value="Daniel">Daniel</option>
+                            <option value="Siyabonga">Siyabonga</option>
+                        </select>
+
+                        <label class="maint-label" for="startTime">Start Time:</label>
+                        <input class="maint-input" type="datetime-local" id="startTime" name="startTime" required>
+
+                        <label class="maint-label" for="endTime">End Time:</label>
+                        <input class="maint-input" type="datetime-local" id="endTime" name="endTime" required>
+
+                        <label class="maint-label" for="priority">Priority Level:</label>
+                        <select class="maint-select" id="priority" name="priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+
+                        <button class="maint-button" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="container">
+                    <table id="maintenanceTable">
+                        <thead>
+                            <tr>
+                                <th>Station</th>
+                                <th>Problem</th>
+                                <th>Resolver</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Resolve Time (minutes)</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resolverSchedule = {};
+
+        document.getElementById('maintenanceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const station = document.getElementById('station').value;
+            const problem = document.getElementById('problem').value;
+            const resolver = document.getElementById('resolver').value;
+            const startTime = new Date(document.getElementById('startTime').value).getTime();
+            const endTime = new Date(document.getElementById('endTime').value).getTime();
+            const priority = document.getElementById('priority').value;
+
+            if (resolverSchedule[resolver]) {
+                for (const task of resolverSchedule[resolver]) {
+                    if ((startTime >= task.startTime && startTime < task.endTime) || 
+                        (endTime > task.startTime && endTime <= task.endTime) || 
+                        (startTime <= task.startTime && endTime >= task.endTime)) {
+                        const freeTime = new Date(task.endTime).toLocaleTimeString();
+                        const userChoice = confirm(`Resolver is occupied and will be free after ${freeTime}. Choose an option:\n1. Reschedule time\n2. Assign another technician`);
+                        if (userChoice) {
+                            return;
+                        } else {
+                            alert('Please choose another resolver.');
+                            return;
+                        }
+                    }
+                }
+            } else {
+                resolverSchedule[resolver] = [];
+            }
+
+            resolverSchedule[resolver].push({ startTime, endTime });
+
+            const resolveTime = Math.round((endTime - startTime) / 60000); // Calculate resolve time in minutes
+
+            const table = document.getElementById('maintenanceTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+            const cell6 = newRow.insertCell(5);
+            const cell7 = newRow.insertCell(6);
+
+            cell1.textContent = station;
+            cell2.textContent = problem;
+            cell3.textContent = resolver;
+            cell4.textContent = new Date(startTime).toLocaleString();
+            cell5.textContent = new Date(endTime).toLocaleString();
+            cell6.textContent = resolveTime;
+            cell7.textContent = priority;
+
+            alert('Maintenance request submitted successfully!');
+        });
+    </script>
+
+   <!-- Maintenance End -->
+
+    <!-- Projects  Start -->
+    <div id="projects" class="page">
+        <h1>PROJECTS Page</h1>
+        <p>Manufacturing content goes here.</p>
+    </div>
+    <!-- Projects End -->
+    <!-- Engineering systems  Start -->
+    <div id="engineering-systems" class="page">
+        <h1>ENGINEERING SYSTEMS Page</h1>
+        <p>Manufacturing content goes here.</p>
+    </div>
+</div>
+    <!-- Engineering systems End -->
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+    </script>
+    <!-- Pages End -->
+</body>
+</html>
